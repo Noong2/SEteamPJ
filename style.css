@@ -1,0 +1,136 @@
+body, html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+    color: #F9F7F0;
+}
+
+li {
+    list-style: none;
+}
+
+button {
+    background-color: #F9F7F0;
+    border: none;
+    border: 1px solid #072A40;
+    color: #072A40;
+    padding: 8px 10px;
+    border-radius: 3px;
+    margin: auto;
+}
+
+button:hover {
+    background-color: #178CA4;
+    color: #F9F7F0;
+    border-radius: 4px;
+}
+
+/**navbar css*/
+.navbar {
+    display: flex;
+    align-items: center;
+    background-color: #178CA4;
+    padding: 8px 12px;
+    border-bottom: 1px solid #072A40;
+}
+.navbar_logo {
+    font-size: 24px;
+    color: #072A40;
+}
+
+
+/**infobox css*/
+.infobox {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    color: #072A40;
+}
+.info.sidebar {
+    flex: 1 40%;
+}
+.info.mapbar {
+    flex: 1 60%;
+}
+
+/**sidebar css*/
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 390px;
+    height: 100vh;
+    background-color: #F9F7F0;
+    border-right: 1px solid #072A40;
+}
+
+.sidebar_optionArea {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid #072A40;
+    padding: 24px 25px 20px;
+}
+
+.btn_search_tab_area {
+    display: flex;
+    width: 340px;
+}
+
+.btn_search_tab {
+    display: flex;
+    padding-bottom: 4px;
+}
+
+.search_inputBox_area {
+    display: flex;
+    width: 340px;
+}
+
+.search_inputBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 4px;
+}
+
+.option_time_area {
+    display: flex;
+    width: 340px;
+}
+
+.option_time {
+    display: flex;
+    padding-bottom: 4px;
+}
+
+.action_tab_area {
+    display: flex;
+    width: 340px;
+}
+
+.action_tab {
+    display: flex;
+    padding-bottom: 4px;
+}
+
+.sidebar_resultsArea {
+    display: flex;
+    flex-direction: column;
+    padding: 18px 20px 15px;
+}
+
+.sidebar_resultstext {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #072A40;
+}
+
+/**mapbar css*/
+.mapbar {
+    display: flex;
+    flex-grow: 1;
+    background-color: #18B7BE;
+}

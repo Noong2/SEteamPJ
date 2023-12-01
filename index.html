@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>TimeOfArrivalNavigation</title>
+    <script src="https://kit.fontawesome.com/f97a5f4cb2.js" crossorigin="anonymous">
+    </script>
+</head>
+<body>
+    <!-- home bar -->
+    <header class="navbar">
+        <div class="navbar_logo">
+            <i class="fa-solid fa-map"></i>
+            <a href="">TA Navigation</a>
+        </div>
+    </header>
+
+    <!-- infobox=sidebar+mapbar 데이터 표시영역 -->
+    <div class="infobox">
+        <!-- search aside 검색 작업과 출력 작업 영역 -->
+        <aside class="sidebar">
+            
+            <!-- search option setting 검색 옵션 설정 -->
+            <div class="sidebar_optionArea">
+
+                <div class="btn_search_tab_area">
+                    <div class="btn_search_tab">
+                        <li><button>
+                            <i class="fa-solid fa-bus"></i> 
+                            <span>대중교통</span>
+                        </button></li>
+                        <li><button>
+                            <i class="fa-solid fa-car"></i>
+                            <span>자동차</span>
+                        </button></li>
+                        <li><button>
+                            <i class="fa-solid fa-person-running"></i>
+                            <span>도보</span>
+                        </button></li>
+                        <li><button>
+                            <i class="fa-solid fa-bicycle"></i>
+                            <span>자전거</span>
+                        </button></li>
+                    </div>
+                </div>
+
+                <div class="search_inputBox_area">
+                    <div class="search_inputBox">
+                        <li>
+                            <span>출발지 입력</span>
+                            <input type="text">
+                        </li>
+                        <li>
+                            <span>도착지 입력</span>
+                            <input type="text">
+                        </li>
+                    </div>
+                </div>
+
+                <div class="option_time_area">
+                    <div class="option_time">
+                        <div>
+                            <span>목표 시간</span>
+                            <input type="datetime-local" name="goalTime" id="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action_tab_area">
+                    <div class="action_tab">
+                        <button type="reset">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>재설정</span>
+                        </button>
+                        <button type="submit">
+                            <span>길찾기</span>
+                            <i class="fa-solid fa-angles-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- results list 검색 결과 목록 -->
+            <div class="sidebar_resultsArea">
+                <div class="sidebar_resultstext">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span>검색 결과</span>
+                </div>
+
+                <!-- resultList 검색결과 목록 -->
+                <div class="resultList">
+
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- map section 지도 출력 및 옵션 영역-->
+        <section class="mapbar">
+            <!-- map view 지도 출력 -->
+            <div class="viewMap">
+                <i class="fa-regular fa-image"></i>
+            </div>
+
+            <!-- map option 지도 조정 영역 -->
+            <div class="optionMap">
+
+            </div>
+            
+        </section>
+    </div>
+    
+
+
+</body>
+</html>
