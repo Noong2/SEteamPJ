@@ -7,6 +7,8 @@
     <title>TimeOfArrivalNavigation</title>
     <script src="https://kit.fontawesome.com/f97a5f4cb2.js" crossorigin="anonymous">
     </script>
+    <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=3bfe53j5op"></script>
+
 </head>
 <body>
     <!-- home bar -->
@@ -102,7 +104,24 @@
         <section class="mapbar">
             <!-- map view 지도 출력 -->
             <div class="viewMap">
-                <i class="fa-regular fa-image"></i>
+                <div id="map"></div>
+
+                <script>
+                    // Naver Map을 표시할 div 요소를 가져옵니다.
+                    var mapDiv = document.getElementById('map');
+
+                    // Naver Maps API를 초기화합니다.
+                    var map = new naver.maps.Map(mapDiv, {
+                        center: new naver.maps.LatLng(37.5665, 126.9780), // 지도 중심 좌표 (서울)
+                        zoom: 13, // 초기 줌 레벨
+                    });
+
+                    // 지도에 마커를 추가합니다.
+                    var marker = new naver.maps.Marker({
+                        position: new naver.maps.LatLng(37.5665, 126.9780), // 마커 위치 (서울)
+                        map: map,
+                    });
+                </script>
             </div>
 
             <!-- map option 지도 조정 영역 -->
