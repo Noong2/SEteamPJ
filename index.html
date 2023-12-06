@@ -29,19 +29,19 @@
 
                 <div class="btn_search_tab_area">
                     <div class="btn_search_tab">
-                        <li><button>
+                        <li><button id="button_bus">
                             <i class="fa-solid fa-bus"></i> 
                             <span>대중교통</span>
                         </button></li>
-                        <li><button>
+                        <li><button id="button_car">
                             <i class="fa-solid fa-car"></i>
                             <span>자동차</span>
                         </button></li>
-                        <li><button>
+                        <li><button id="button_person-running">
                             <i class="fa-solid fa-person-running"></i>
                             <span>도보</span>
                         </button></li>
-                        <li><button>
+                        <li><button id="button_bicycle"> 
                             <i class="fa-solid fa-bicycle"></i>
                             <span>자전거</span>
                         </button></li>
@@ -52,11 +52,11 @@
                     <div class="search_inputBox">
                         <li>
                             <span>출발지 입력</span>
-                            <input type="text">
+                            <input type="text" placeholder="출발지">
                         </li>
                         <li>
                             <span>도착지 입력</span>
-                            <input type="text">
+                            <input type="text" placeholder="도착지">
                         </li>
                     </div>
                 </div>
@@ -132,7 +132,101 @@
         </section>
     </div>
     
+    <script>
 
+        var TypeOfButton = 0
+        //교통수단 저장하는 함수  1번 대중교통 2번 자가용 3번 도보 4번 자전거
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // 대중교통 버튼에 대한 이벤트 리스너 추가
+            document.querySelector('.fa-bus').parentNode.addEventListener('click', function () {
+                //alert('대중교통버튼 클릭')
+                TypeOfButton = 1
+                handleTransportationButtonClick('bus');
+            });
+    
+            // 자동차 버튼에 대한 이벤트 리스너 추가
+            document.querySelector('.fa-car').parentNode.addEventListener('click', function () {
+                //alert('자동차버튼 클릭')
+                TypeOfButton = 2
+                handleTransportationButtonClick('car');
+            });
+    
+            // 도보 버튼에 대한 이벤트 리스너 추가
+            document.querySelector('.fa-person-running').parentNode.addEventListener('click', function () {
+                //alert('도보버튼 클릭')
+                TypeOfButton = 3
+                handleTransportationButtonClick('person-running');
+            });
+    
+            // 자전거 버튼에 대한 이벤트 리스너 추가
+            document.querySelector('.fa-bicycle').parentNode.addEventListener('click', function () {
+                //alert('자전거버튼 클릭')
+                TypeOfButton = 4
+                handleTransportationButtonClick('bicycle');
+            });
+    
+            // 길찾기 버튼에 대한 이벤트 리스너 추가
+            document.querySelector('.action_tab button[type="submit"]').addEventListener('click', function () {
+                handleFindPathButtonClick();
+            });
+    
+            // 재설정 버튼에 대한 이벤트 리스너 추가
+            document.querySelector('.action_tab button[type="reset"]').addEventListener('click', function () {
+                var inputElements = document.querySelectorAll('.search_inputBox_area input, .option_time_area input');
+
+                inputElements.forEach(function (inputElement) {
+                inputElement.value = '';
+                });
+                
+                var selectedButton = document.querySelector('.btn_search_tab button.selected');
+                if (selectedButton) {
+                selectedButton.classList.remove('selected');
+                }
+
+                handleResetButtonClick();
+            });
+        });
+    
+        // 대중교통, 자동차, 도보, 자전거 버튼 클릭 시 실행될 함수
+        function handleTransportationButtonClick(transportationType) {
+            var selectedButton = document.querySelector('.btn_search_tab button.selected');
+            var currentButton = document.getElementById('button_' + transportationType.toLowerCase());
+            
+            if (selectedButton) {
+            selectedButton.classList.remove('selected');
+
+            currentButton.classList.add('selected');
+
+            console.log('Selected Transportation:', transportationType);
+        }
+        else
+        {
+        currentButton.classList.add('selected');
+        }
+    }
+
+    // 길찾기 버튼 클릭 시 실행될 함수
+    // 길찾기 버튼을 클릭할때만 출발지, 도착지, 목표시간, 버튼 정수가 저장됨    
+    function handleFindPathButtonClick() {
+    var departureInput = document.querySelector('.search_inputBox_area input[placeholder="출발지"]');
+    var destinationInput = document.querySelector('.search_inputBox_area input[placeholder="도착지"]');
+    var goalTimeInput = document.querySelector('.option_time_area input[name="goalTime"]');
+    
+    var departure = departureInput.value; //출발지의 입력값
+    var destination = destinationInput.value;//도착지의 입력값
+    var goalTime = goalTimeInput.value;//목표시간의 입력값
+
+    TypeOfButton//4개의 버튼중하나
+    //위의 3가지 변수를
+    }
+        // 재설정 버튼 클릭 시 실행될 함수
+        function handleResetButtonClick() {
+            console.log('Reset Button Clicked');
+            // 이곳에 재설정 관련 동작을 추가하세요.
+        }
+
+    </script>
 
 </body>
 </html>
