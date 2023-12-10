@@ -16,7 +16,8 @@
         <input type="text" id="departure-input" placeholder="출발지 좌표 (예: 126.9818687438969, 37.57407262806218)" required>
 
         <label for="destination-input">목적지:</label>
-        <input type="text" id="destination-input" placeholder="목적지 좌표 (예: 126.98912143707317, 37.54505369307025)" required>
+        <input type="text" id="destination-input" placeholder="목적지 좌표 (예: 126.98912143707317, 37.54505369307025)"
+            required>
 
         <button type="button" onclick="searchPath()">경로 검색</button>
     </form>
@@ -60,79 +61,77 @@
                 url: "https://api.odsay.com/v1/api/searchPubTransPathR",
                 data: requestData
             })
-            .done(function (msg) {
-                console.log(msg);
+                .done(function (msg) {
+                    console.log(msg);
 
-                // 결과를 경로로 정렬
-                var sortedPaths = msg.result.path.sort(function(a, b) {
-                    return a.pathID - b.pathID;
-                });
+                    // 결과를 경로로 정렬
+                    var sortedPaths = msg.result.path.sort(function (a, b) {
+                        return a.pathID - b.pathID;
+                    });
 
-                // 각 경로에 대한 정보를 추출하고 출력
-                sortedPaths.forEach(function(path, index) {
-                    var pathNumber = index + 1;
-                    var pathInfo = {
-                        totalTime: path.info.totalTime,
-                        totalWalk: path.info.totalWalk,
-                        busTransitCount: path.info.busTransitCount,
-                        payment: path.info.payment,
-                        totalDistance: path.info.totalDistance
-                    };
-
-                    // 경로 정보를 HTML에 출력
-                    $("#path-info").append("<p><strong>경로 " + pathNumber + " 정보:</strong><br>" +
-                        "총 소요 시간: " + pathInfo.totalTime + " 분<br>" +
-                        "도보 이동 거리: " + pathInfo.totalWalk + " m<br>" +
-                        "환승 횟수: " + pathInfo.busTransitCount + " 회<br>" +
-                        "총 요금: " + pathInfo.payment + " 원<br>" +
-                        "총 이동 거리: " + pathInfo.totalDistance + " m</p>");
-
-                    // subPath 정보를 HTML에 출력
-                    $("#path-info").append("<p><strong>경로 " + pathNumber + "의 subPath 정보:</strong></p>");
-                    path.subPath.forEach(function(subPath, subIndex) {
-                        var subPathInfo = {
-                            trafficType: subPath.trafficType + "",
-                            distance: subPath.distance,
-                            sectionTime: subPath.sectionTime,
-                            stationCount: subPath.stationCount,
-                            startName: subPath.startName,
-                            endName: subPath.endName,
-                            lane: subPath.lane, // 추가된 부분: lane 데이터 가져오기
-                            passStopList: subPath.passStopList // 추가된 부분: passStopList 데이터 가져오기
+                    // 각 경로에 대한 정보를 추출하고 출력
+                    sortedPaths.forEach(function (path, index) {
+                        var pathNumber = index + 1;
+                        var pathInfo = {
+                            totalTime: path.info.totalTime,
+                            totalWalk: path.info.totalWalk,
+                            busTransitCount: path.info.busTransitCount,
+                            payment: path.info.payment,
+                            totalDistance: path.info.totalDistance
                         };
 
-                        // 교통수단을 읽기 쉬운 형태로 변경
-                        var readableTrafficType = getReadableTrafficType(subPathInfo.trafficType);
+                        // 경로 정보를 HTML에 출력
+                        $("#path-info").append("<p><strong>경로 " + pathNumber + " 정보:</strong><br>" +
+                            "총 소요 시간: " + pathInfo.totalTime + " 분<br>" +
+                            "도보 이동 거리: " + pathInfo.totalWalk + " m<br>" +
+                            "환승 횟수: " + pathInfo.busTransitCount + " 회<br>" +
+                            "총 요금: " + pathInfo.payment + " 원<br>" +
+                            "총 이동 거리: " + pathInfo.totalDistance + " m</p>");
 
                         // subPath 정보를 HTML에 출력
-                        $("#path-info").append("<p>SubPath " + (subIndex + 1) + ": " +
-                            "교통수단: " + readableTrafficType + ", " +
-                            "이동 거리: " + subPathInfo.distance + " m, " +
-                            "소요 시간: " + subPathInfo.sectionTime + " 분, " +
-                            "정거장 수: " + subPathInfo.stationCount + " 개, " +
-                            "출발역: " + subPathInfo.startName + ", " +
-                            "도착역: " + subPathInfo.endName + "</p>");
+                        $("#path-info").append("<p><strong>경로 " + pathNumber + "의 subPath 정보:</strong></p>");
+                        path.subPath.forEach(function (subPath, subIndex) {
+                            var subPathInfo = {
+                                trafficType: subPath.trafficType + "",
+                                distance: subPath.distance,
+                                sectionTime: subPath.sectionTime,
+                                stationCount: subPath.stationCount,
+                                startName: subPath.startName,
+                                endName: subPath.endName,
+                                lane: subPath.lane, // 추가된 부분: lane 데이터 가져오기
+                                passStopList: subPath.passStopList // 추가된 부분: passStopList 데이터 가져오기
+                            };
 
-                        // lane 데이터를 가져와서 출력
-                        if (subPathInfo.lane) {
-                            var busNo = subPathInfo.lane.busNo;
-                            $("#path-info").append("<p>SubPath " + (subIndex + 1) + "의 lane 정보: " +
-                                "버스 번호: " + busNo + "</p>");
-                        }
+                            // 교통수단을 읽기 쉬운 형태로 변경
+                            var readableTrafficType = getReadableTrafficType(subPathInfo.trafficType);
 
-                        // passStopList 데이터를 가져와서 출력
-                        if (subPathInfo.passStopList && subPathInfo.passStopList.length > 0) {
-                            $("#path-info").append("<p>SubPath " + (subIndex + 1) + "의 passStopList 정보: " +
-                                "정거장 목록: " + subPathInfo.passStopList.join(", ") + "</p>");
-                        }
+                            if (readableTrafficType === '버스') {
+                                $("#path-info").append("<p>SubPath " + (subIndex + 1) + ": " +
+                                    "교통수단: " + readableTrafficType + ", " +
+                                    "이동 거리: " + subPathInfo.distance + " m, " +
+                                    "소요 시간: " + subPathInfo.sectionTime + " 분, " +
+                                    "정거장 수: " + subPathInfo.stationCount + " 개, " +
+                                    "출발역: " + subPathInfo.startName + ", " +
+                                    "도착역: " + subPathInfo.endName + ", " +
+                                    "버스번호: " + subPathInfo.lane[0].busNo + ", " +
+                                    "정거장 목록: " + "</p>");
+                            } else {
+                                $("#path-info").append("<p>SubPath " + (subIndex + 1) + ": " +
+                                    "교통수단: " + readableTrafficType + ", " +
+                                    "이동 거리: " + subPathInfo.distance + " m, " +
+                                    "소요 시간: " + subPathInfo.sectionTime + " 분, " +
+                                    "정거장 수: " + subPathInfo.stationCount + " 개, " +
+                                    "출발역: " + subPathInfo.startName + ", " +
+                                    "도착역: " + subPathInfo.endName + "</p>");
+                            }
+                        });
                     });
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    console.error("API 호출 실패: " + textStatus, errorThrown);
+                    // 에러 메시지를 출력
+                    $("#path-info").append("<p><strong>API 호출 실패:</strong> " + textStatus + "</p>");
                 });
-            })
-            .fail(function (jqXHR, textStatus, errorThrown) {
-                console.error("API 호출 실패: " + textStatus, errorThrown);
-                // 에러 메시지를 출력
-                $("#path-info").append("<p><strong>API 호출 실패:</strong> " + textStatus + "</p>");
-            });
         }
 
         // 교통수단 코드를 읽기 쉬운 형태로 변경하는 함수
