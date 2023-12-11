@@ -98,12 +98,15 @@
                             startName: subPath.startName,
                             endName: subPath.endName,
                             lane: subPath.lane, // Added section: Import lane data
+                            passStopList: subPath.passStopList // Added part: Get passStopList data
                         };
 
                         // 교통수단을 읽기 쉬운 형태로 변경
                         var readableTrafficType = getReadableTrafficType(subPathInfo.trafficType);
+                        
 
                         if (readableTrafficType === '버스') {
+                            var readBusStationList = getBusStationList(subPathInfo.passStopList);
                             $("#path-info").append("<p>SubPath " + (subIndex + 1) + ": " +
                                 "교통수단: " + readableTrafficType + ", " +
                                 "이동 거리: " + subPathInfo.distance + " m, " +
@@ -111,7 +114,8 @@
                                 "정거장 수: " + subPathInfo.stationCount + " 개, " +
                                 "출발역: " + subPathInfo.startName + ", " +
                                 "도착역: " + subPathInfo.endName + ", " +
-                                "버스 번호: " + subPathInfo.lane[0].busNo + "</p>" );
+                                "버스 번호: " + subPathInfo.lane[0].busNo + ", " +
+                                "정거장 목록: " + readBusStationList + "</p>");
                         } else {
                             $("#path-info").append("<p>SubPath " + (subIndex + 1) + ": " +
                                 "교통수단: " + readableTrafficType + ", " +
@@ -144,6 +148,17 @@
                     return "알 수 없음";
             }
         }
+
+        function getBusStationList(stopList) {
+	let resultList = "";	
+
+	for ( var i = 0; i < stopList.stations.length; i++ ) {
+		resultList += stopList.stations[i].stationName;
+        resultList += ",";
+	}
+	return resultList;
+}
+
     </script>
 </body>
 
