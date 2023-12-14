@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>버스 노선 정보</title>
+</head>
+
+<body>
+
+    <form id="bus-form">
+        <label for="bus-ID">버스입력:</label>
+        <input type="text" id="bus-ID" placeholder="버스ID입력" required>
+        <input type="text" id="bus-index" placeholder="버스 순서 번호 입력" required>
+        <button type="button" onclick="getBusRouteInfo(), getRealTimeBusInfo()">경로 검색</button>
+        <button type="button" onclick="getBusIndexInfo()">원하는 버스 검색</button>
+        <button type="button" onclick="stopAutoUpdate()">정지</button>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"
+        integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+
+    <div id="bus-info">
+        <!-- 여기에 버스 정보가 표시될 부분 -->
+    </div>
+
+    <script>
+        // DOM이 준비되면 실행
+            // 실시간 버스 정보 갱신 함수
+            function getBusRouteInfo() {
+                // 이전에 출력된 내용 초기화
+                $("#bus-info").empty();
+                var busIdInput = $("#bus-ID").val();
+
+                // API 호출을 위한 데이터 준비
+                var requestData = {
+                    apiKey: "OYDBIiPgACG9nMSDMBfa1g",
+                    lang: "0",
+                    busID: busIdInput
+                };
+
+                // API 호출
+                $.ajax({
+                    method: "GET",
+                    url: "https://api.odsay.com/v1/api/busLaneDetail",
+                    data: requestData
+                })
+                .done(function (msg) {
+                    // 여기서 받아온 정보를 페이지에 출력하도록 수정
+                    var busInfoContainer = $("#bus-info");
+
+                    // msg 객체의 배열 값을 반복하여 출력
+                    for (var i = 0; i < msg.result.station.length; i++) {
+                        busInfoContainer.append("<p><strong>정류장 " + (i + 1) + ":</strong> " + msg.result.station[i].stationName + "</p>");
+                    }
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    console.error("API 호출 실패: " + textStatus, errorThrown);
+                    // 에러 메시지를 출력
+                    $("#bus-info").html("<p><strong>API 호출 실패:</strong> " + textStatus + "</p>");
+                });
+            }
+    </script>
+
+    <script>
+        // DOM이 준비되면 실행
+
+            // 실시간 버스 정보 갱신 함수
+            function getRealTimeBusInfo() {
+                // 이전에 출력된 내용 초기화
+                $("#bus-info").empty();
+                var busIdInput = $("#bus-ID").val();
+
+                var busIndexInput = $("#bus-index").val();
+
+                // API 호출을 위한 데이터 준비
+                var requestData = {
+                    apiKey: "OYDBIiPgACG9nMSDMBfa1g",
+                    lang: "0",
+                    busID: busIdInput,
+                    busBase: "1"
+                };
+
+                // API 호출
+                $.ajax({
+                    method: "GET",
+                    url: "https://api.odsay.com/v1/api/realtimeRoute",
+                    data: requestData
+                })
+                .done(function (msg) {
+                    // 여기서 받아온 정보를 페이지에 출력하도록 수정
+                    console.log(msg);
+                    for(var i = 0; i < msg.result.real.length; i++){
+                        $("#bus-info").append("<p><strong>"+ (i+1) 
+                            +"번째 버스의 방금 막 출발한 역 ID:</strong> " 
+                            + msg.result.real[i].fromStationId + "</p>");
+                            for (var j = 0; j < msg.result.base.station.length; j++) {
+                                if ((msg.result.base.station[j].idx) + 1 === parseInt(msg.result.real[i].fromStationSeq)) {
+                                    $("#bus-info").append("<p><strong>" + "정류장 이름 : " + msg.result.base.station[j].stationName + "</p>");
+                                    break;
+                                }
+                            }
+                    }
+                    
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    console.error("API 호출 실패: " + textStatus, errorThrown);
+                    // 에러 메시지를 출력
+                    $("#bus-info").html("<p><strong>API 호출 실패:</strong> " + textStatus + "</p>");
+                });
+            }
+    </script>
+
+<script>
+    // DOM이 준비되면 실행
+        var updateTimer;
+
+        // 실시간 버스 정보 갱신 함수
+        function getBusIndexInfo() {
+            // 이전에 출력된 내용 초기화
+            $("#bus-info").empty();
+            $("#bus-index").empty();
+            var busIdInput = $("#bus-ID").val();
+
+            var busIndexInput = $("#bus-index").val();
+
+            // API 호출을 위한 데이터 준비
+            var requestData = {
+                apiKey: "OYDBIiPgACG9nMSDMBfa1g",
+                lang: "0",
+                busID: busIdInput,
+                busBase: "1"
+            };
+
+            // API 호출
+            $.ajax({
+                method: "GET",
+                url: "https://api.odsay.com/v1/api/realtimeRoute",
+                data: requestData
+            })
+            .done(function (msg) {
+                // 여기서 받아온 정보를 페이지에 출력하도록 수정
+                console.log(msg);
+                for(var i = 0; i < msg.result.real.length; i++){
+                    if(busIndexInput == i+1){
+                        $("#bus-info").append("<p><strong>"+ (i+1) 
+                            +"번째 버스의 방금 막 출발한 역 ID:</strong> " 
+                            + msg.result.real[i].fromStationId
+                            + " 방금전 출발한 버스 정류장 인덱스 번호 : " + +msg.result.real[i].fromStationSeq + "</p>");
+                            for (var j = 0; j < msg.result.base.station.length; j++) {
+                                if ((msg.result.base.station[j].idx) + 1 === parseInt(msg.result.real[i].fromStationSeq)) {
+                                    $("#bus-info").append("<p><strong>" + "정류장 이름 : " + msg.result.base.station[j].stationName + "</p>");
+                                    break;
+                                }
+                            }
+                        break;
+                    }
+                }
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                console.error("API 호출 실패: " + textStatus, errorThrown);
+                // 에러 메시지를 출력
+                $("#bus-info").html("<p><strong>API 호출 실패:</strong> " + textStatus + "</p>");
+            });
+        }
+
+            // 1분마다 자동으로 업데이트
+            function startAutoUpdate() {
+                updateTimer = setInterval(getBusIndexInfo, 60000);
+            }
+
+            // 정지 버튼 클릭 시 자동 업데이트 정지
+            function stopAutoUpdate() {
+                clearInterval(updateTimer);
+            }
+
+            // 초기에 자동 업데이트 시작
+            startAutoUpdate();
+</script>
+
+</body>
+
+</html>
