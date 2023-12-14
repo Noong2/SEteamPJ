@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대중교통 경로안내</title>
+</head>
+
+<body>
+    <h1>대중교통 경로안내</h1>
+
+    <!-- 출발지와 목적지 입력 폼 -->
+    <form id="location-form">
+        <label for="departure-input">출발지:</label>
+        <input type="text" id="departure-input" placeholder="출발지 좌표 (예: 126.9818687438969, 37.57407262806218)" required>
+
+        <label for="destination-input">목적지:</label>
+        <input type="text" id="destination-input" placeholder="목적지 좌표 (예: 126.98912143707317, 37.54505369307025)" required>
+
+        <button type="button" onclick="searchPath()">경로 검색</button>
+    </form>
+
+    <!-- 경로 및 subPath 정보를 출력할 요소 -->
+    <div id="path-info"></div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+    <script>
+        function searchPath() {
+            // 이전에 출력된 내용 초기화
+            $("#path-info").empty();
+
+            // 사용자로부터 입력 받은 출발지와 목적지 정보
+            var departureInput = $("#departure-input").val();
+            var destinationInput = $("#destination-input").val();
+
+            // 입력된 정보를 콤마로 분리하여 좌표 추출
+            var departureCoords = departureInput.split(',').map(function (coord) {
+                return coord.trim();
+            });
+            var destinationCoords = destinationInput.split(',').map(function (coord) {
+                return coord.trim();
+            });
+
+            // API 호출을 위한 데이터 준비
+            var requestData = {
+                apiKey: "OYDBIiPgACG9nMSDMBfa1g",
+                SX: departureCoords[0],
+                SY: departureCoords[1],
+                EX: destinationCoords[0],
+                EY: destinationCoords[1],
+                SearchPathType: "2"
+            };
+
+            // API 호출
+            $.ajax({
+                method: "GET",
+                url: "https://api.odsay.com/v1/api/searchPubTransPathR",
+                data: requestData
+            })
+            .done(function (msg) {
+                console.log(msg);
+
+                // 결과를 경로로 정렬
+                var sortedPaths = msg.result.path.sort(function(a, b) {
+                    return a.pathID - b.pathID;
+                });
+
+                // 각 경로에 대한 정보를 추출하고 출력
+                sortedPaths.forEach(function(path, index) {
+                    var pathNumber = index + 1;
+                    var pathInfo = {
+                        totalTime: path.info.totalTime,
+                        totalWalk: path.info.totalWalk,
+                        busTransitCount: path.info.busTransitCount,
+                        payment: path.info.payment,
+                        totalDistance: path.info.totalDistance
+                    };
+
+                    // 경로 정보를 HTML에 출력
+                    $("#path-info").append("<p><strong>경로 " + pathNumber + " 정보:</strong><br>" +
+                        "총 소요 시간: " + pathInfo.totalTime + " 분<br>" +
+                        "도보 이동 거리: " + pathInfo.totalWalk + " m<br>" +
+                        "환승 횟수: " + pathInfo.busTransitCount + " 회<br>" +
+                        "총 요금: " + pathInfo.payment + " 원<br>" +
+                        "총 이동 거리: " + pathInfo.totalDistance + " m</p>");
+
+                    // subPath 정보를 HTML에 출력
+                    $("#path-info").append("<p><strong>경로 " + pathNumber + "의 subPath 정보:</strong></p>");
+                    path.subPath.forEach(function(subPath, subIndex) {
+                        var subPathInfo = {
+                            trafficType: subPath.trafficType + "",
+                            distance: subPath.distance,
+                            sectionTime: subPath.sectionTime,
+                            stationCount: subPath.stationCount,
+                            startName: subPath.startName,
+                            endName: subPath.endName,
+                            lane: subPath.lane, // Added section: Import lane data
+                            passStopList: subPath.passStopList // Added part: Get passStopList data
+                        };
+
+                        // 교통수단을 읽기 쉬운 형태로 변경
+                        var readableTrafficType = getReadableTrafficType(subPathInfo.trafficType);
+                        
+
+                        if (readableTrafficType === '버스') {
+                            var readBusStationList = getBusStationList(subPathInfo.passStopList);
+                            $("#path-info").append("<p>SubPath " + (subIndex + 1) + ": " +
+                                "교통수단: " + readableTrafficType + ", " +
+                                "이동 거리: " + subPathInfo.distance + " m, " +
+                                "소요 시간: " + subPathInfo.sectionTime + " 분, " +
+                                "정거장 수: " + subPathInfo.stationCount + " 개, " +
+                                "출발역: " + subPathInfo.startName + ", " +
+                                "도착역: " + subPathInfo.endName + ", " +
+                                "버스 번호: " + subPathInfo.lane[0].busNo + ", " +
+                                "정거장 목록: " + readBusStationList + "</p>");
+                        } else {
+                            $("#path-info").append("<p>SubPath " + (subIndex + 1) + ": " +
+                                "교통수단: " + readableTrafficType + ", " +
+                                "이동 거리: " + subPathInfo.distance + " m, " +
+                                "소요 시간: " + subPathInfo.sectionTime + " 분, " +
+                                "정거장 수: " + subPathInfo.stationCount + " 개, " +
+                                "출발역: " + subPathInfo.startName + ", " +
+                                "도착역: " + subPathInfo.endName + "</p>");
+                        }
+                    });
+                });
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                console.error("API 호출 실패: " + textStatus, errorThrown);
+                // 에러 메시지를 출력
+                $("#path-info").append("<p><strong>API 호출 실패:</strong> " + textStatus + "</p>");
+            });
+        }
+
+        // 교통수단 코드를 읽기 쉬운 형태로 변경하는 함수
+        function getReadableTrafficType(trafficType) {
+            switch (trafficType) {
+                case '1':
+                    return "지하철";
+                case '2':
+                    return "버스";
+                case '3':
+                    return "도보";
+                default:
+                    return "알 수 없음";
+            }
+        }
+
+        function getBusStationList(stopList) {
+	let resultList = "";	
+
+	for ( var i = 0; i < stopList.stations.length; i++ ) {
+		resultList += stopList.stations[i].stationName;
+        resultList += ",";
+	}
+	return resultList;
+}
+
+    </script>
+</body>
+
+</html>
