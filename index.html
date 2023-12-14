@@ -122,6 +122,9 @@
 
                         // 초기 맵 리스트로 되돌리기
                         selectMapList();
+
+                        // 결과 목록 초기화
+                        $('#resultList').empty();
                     });
 
                     // 출발지, 목적지 검색 및 표시 함수
@@ -258,16 +261,23 @@
                                         totalDistance: path.info.totalDistance
                                     };
 
+                                    // 경로 패스 위에 구분선 추가
+                                    $("#resultList").append("<hr class='pathUpSeparator'>");
+
                                     // 경로 정보를 HTML에 출력
                                     $("#resultList").append("<p><strong>경로 " + pathNumber + " 정보:</strong><br>" +
-                                        "총 소요 시간: " + pathInfo.totalTime + " 분<br>" +
-                                        "도보 이동 거리: " + pathInfo.totalWalk + " m<br>" +
-                                        "환승 횟수: " + pathInfo.busTransitCount + " 회<br>" +
-                                        "총 요금: " + pathInfo.payment + " 원<br>" +
-                                        "총 이동 거리: " + pathInfo.totalDistance + " m</p>");
+                                        "총 소요 시간: " + pathInfo.totalTime + "분<br>" +
+                                        "도보 " + (pathInfo.totalWalk / 1000).toFixed(1) + "km • " + // 미터를 킬로미터로 변환
+                                        "환승 " + pathInfo.busTransitCount + "회 • " +
+                                        "요금 " + pathInfo.payment + "원 • " +
+                                        "총 " + (pathInfo.totalDistance / 1000).toFixed(1) + "km " +
+                                        "<button class='toggleSubPaths'>상세 경로 ►</button><br>" + "</p>");// ▼ 버튼 추가
+
+                                    // 경로와 서브패스 사이에 구분선 추가
+                                    $("#resultList").append("<hr class='pathSeparator'>");
+
 
                                     // subPath 정보를 HTML에 출력
-                                    $("#resultList").append("<p><strong>경로 " + pathNumber + "의 subPath 정보:</strong></p>");
                                     path.subPath.forEach(function (subPath, subIndex) {
                                         var subPathInfo = {
                                             trafficType: subPath.trafficType + "",
@@ -285,22 +295,38 @@
 
 
                                         if (readableTrafficType === '버스') {
+                                            // 각 서브패스에 대한 subPathContainer 생성
+                                            var subPathContainer = $("<div class='subPathContainer'>");
                                             var readBusStationList = getBusStationList(subPathInfo.passStopList);
-                                            $("#resultList").append("<p>SubPath " + (subIndex + 1) + ": " +
-                                                "교통수단: " + readableTrafficType + ", " +
-                                                "이동 거리: " + subPathInfo.distance + " m, " +
-                                                "소요 시간: " + subPathInfo.sectionTime + " 분, " +
-                                                "정거장 수: " + subPathInfo.stationCount + " 개, " +
-                                                "출발역: " + subPathInfo.startName + ", " +
-                                                "도착역: " + subPathInfo.endName + ", " +
-                                                "버스 번호: " + subPathInfo.lane[0].busNo + ", " +
-                                                "정거장 목록: " + readBusStationList + "</p>");
+                                            subPathContainer.append("<p>상세 경로" + (subIndex + 1) + ": <br>" +
+                                                "교통수단: " + readableTrafficType + "<br> " +
+                                                "이동 거리: " + (subPathInfo.distance / 1000).toFixed(1) + " km<br> " + // 미터를 킬로미터로 변환
+                                                "소요 시간: " + subPathInfo.sectionTime + " 분<br> " +
+                                                "정거장 수: " + subPathInfo.stationCount + " 개<br> " +
+                                                "출발역: " + subPathInfo.startName + "<br> " +
+                                                "도착역: " + subPathInfo.endName + "<br> " +
+                                                "버스 번호: " + subPathInfo.lane[0].busNo + "<br> " +
+                                                "정거장 목록: <br>" + readBusStationList + "<br></p>");
+                                            // 서브패스 정보를 subPathContainer에 추가
+                                            $("#resultList").append(subPathContainer);
+                                            // 서브패스 사이에 구분선 추가
+                                            subPathContainer.append("<hr class='subPathSeparator'>");
                                         } else {
-                                            $("#resultList").append("<p>SubPath " + (subIndex + 1) + ": " +
-                                                "교통수단: " + readableTrafficType + ", " +
-                                                "이동 거리: " + subPathInfo.distance + " m, " +
-                                                "소요 시간: " + subPathInfo.sectionTime + " 분, " + "</p>");
+                                            // 각 서브패스에 대한 subPathContainer 생성
+                                            var subPathContainer = $("<div class='subPathContainer'>");
+                                            subPathContainer.append("<p>상세 경로" + (subIndex + 1) + ": <br>" +
+                                                "교통수단: " + readableTrafficType + "<br> " +
+                                                "이동 거리: " + (subPathInfo.distance / 1000).toFixed(1) + " km<br> " +
+                                                "소요 시간: " + subPathInfo.sectionTime + " 분<br> " + "</p>");
+                                            // 서브패스 정보를 subPathContainer에 추가
+                                            $("#resultList").append(subPathContainer);
+                                            // 서브패스 사이에 구분선 추가
+                                            subPathContainer.append("<hr class='subPathSeparator'>");
                                         }
+                                        // ▼ 버튼에 대한 클릭 이벤트 핸들러 등록
+                                        $(".toggleSubPaths").click(function () {
+                                            subPathContainer.toggle();
+                                        });
                                     });
                                 });
                             })
@@ -330,7 +356,7 @@
 
                         for (var i = 0; i < stopList.stations.length; i++) {
                             resultList += stopList.stations[i].stationName;
-                            resultList += ",";
+                            resultList += "<br>";
                         }
                         return resultList;
                     }

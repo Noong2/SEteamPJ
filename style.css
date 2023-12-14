@@ -130,6 +130,11 @@ button:hover {
     box-sizing: border-box; /* 패딩을 포함한 전체 너비를 유지 */
 }
 
+
+.subPathSeparator {
+    border-top: 1px dashed #999; /* 점선 스타일의 회색 경계선 */
+}
+
 .sidebar_resultstext {
     display: flex;
     align-items: center;
@@ -169,23 +174,22 @@ button:hover {
     height: 100%;
 }
 
+/* 서브패스 컨테이너를 초기에 숨김 */
+div.subPathContainer {
+    display: none;
+}
 
-/* SubPath 정보 확장 버튼 스타일 */
-.subpath-toggle {
+/* ▼와 ▲ 버튼 스타일 */
+.toggleSubPaths {
+    background: none;
+    border: none;
+    border: 1px solid #072A40;
     cursor: pointer;
-    color: #007bff; /* 링크 색상, 필요에 따라 변경 가능 */
+    font-size: 16px;
+    color: #333;
 }
 
-/* 확장된 SubPath 정보에 대한 스타일 */
-.subpath-details {
-    display: none; /* 초기에는 숨김 상태로 설정 */
-    padding: 10px; /* 필요에 따라 조절 가능한 여백 */
-    background-color: #f8f9fa; /* 배경색, 필요에 따라 변경 가능 */
-    border: 1px solid #dee2e6; /* 테두리, 필요에 따라 변경 가능 */
-    margin-top: 10px; /* 상단 여백, 필요에 따라 변경 가능 */
-}
-
-/* 확장된 SubPath 정보에 대한 스타일 - 보여주기 효과 */
-.subpath-details.active {
-    display: block;
+/* ▼와 ▲ 버튼 간격 조정 */
+.toggleSubPaths + br {
+    margin-bottom: 5px;
 }
